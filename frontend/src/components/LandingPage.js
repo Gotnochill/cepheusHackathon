@@ -1,26 +1,35 @@
-// src/components/LandingPage.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./LandingPage.css";
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
   return (
     <div className="landing-container">
       <h1 className="title">Disaster Management System</h1>
-      <p className="subheading">
-        Real-time map, dashboard, and latest alerts for disaster management.
-      </p>
+      <p className="subheading">Bangalore Region — Real-time Relief Coordination</p>
 
-      <div className="options-container">
-        <button className="option-button" onClick={() => window.open(apiUrl, '_blank')}>
-          Live Map
-        </button>
-        <button className="option-button" onClick={() => navigate("/latest-alerts")}>
-          Latest Alerts/Requests
-        </button>
+      <div className="mode-grid">
+        <div className="mode-card" onClick={() => navigate("/admin")}>
+          <div className="mode-tag">ADMIN</div>
+          <h2>Admin Simulation</h2>
+          <p>
+            Command-center view. Monitor the live Bangalore map, incoming SOS
+            requests, resource inventory, and demand analytics in real time.
+          </p>
+          <span className="mode-cta">Open Dashboard</span>
+        </div>
+
+        <div className="mode-card mode-card--user" onClick={() => navigate("/user")}>
+          <div className="mode-tag mode-tag--user">SOS</div>
+          <h2>Realistic Simulation</h2>
+          <p>
+            End-user mode. Log in, share your GPS location, and submit an
+            emergency SOS request with specific resource needs.
+          </p>
+          <span className="mode-cta mode-cta--user">Start Simulation</span>
+        </div>
       </div>
     </div>
   );
