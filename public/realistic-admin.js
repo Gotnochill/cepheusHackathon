@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Constants ──────────────────────────────────────────────────────────────
   const ATRIA_IT       = [13.0038, 77.5665];   // Atria Institute of Technology
-  const TRUCK_INTERVAL = 600;
+  const TRUCK_INTERVAL = 950;
   const TAGS           = ['Medical', 'Fire', 'Security', 'Evacuation'];
   const SEV_ORDER      = { Critical: 0, High: 1, Moderate: 2, Low: 3 };
 
@@ -38,8 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
       html: '<div class="ait-marker">AIT</div>',
       className: '', iconSize: [36, 36], iconAnchor: [18, 18],
     }),
+    interactive: false,   // never blocks clicks on SOS markers underneath
+    zIndexOffset: -1000,
   }).addTo(map).bindTooltip('Atria Institute of Technology', {
     permanent: true, direction: 'top', className: 'depot-label', offset: [0, -20],
+    interactive: false,
   });
 
   // ── State ──────────────────────────────────────────────────────────────────
