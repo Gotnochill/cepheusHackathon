@@ -1,17 +1,20 @@
 {
-  "name": "diasaster-manager",
+  "name": "cepheus-crisis-response",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "build": "npm install"
+    "build": "cd frontend && npm install && npm run build"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Rapid Crisis Response — Hospitality Emergency Coordination Platform",
   "dependencies": {
     "@faker-js/faker": "^9.5.0",
     "cors": "^2.8.5",
