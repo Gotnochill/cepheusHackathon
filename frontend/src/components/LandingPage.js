@@ -12,13 +12,13 @@ const LandingPage = () => {
 
       <div className="mode-grid">
         <div className="mode-card" onClick={() => navigate("/admin")}>
-          <div className="mode-tag">ADMIN</div>
-          <h2>Admin Simulation</h2>
+          <div className="mode-tag">DEMO</div>
+          <h2>Demo Simulation</h2>
           <p>
-            Command-center view. Monitor the live Bangalore map, incoming SOS
-            requests, resource inventory, and demand analytics in real time.
+            Watch the system in action. Live Bangalore map with simulated
+            disaster reports, priority routing, and automated truck dispatch.
           </p>
-          <span className="mode-cta">Open Dashboard</span>
+          <span className="mode-cta">Watch Demo</span>
         </div>
 
         <div className="mode-card mode-card--user" onClick={() => navigate("/user")}>

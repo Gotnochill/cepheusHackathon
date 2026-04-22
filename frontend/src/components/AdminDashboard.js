@@ -34,7 +34,7 @@ const AdminDashboard = () => {
           Back
         </button>
         <span style={{ fontWeight: 600, fontSize: "1rem" }}>
-          Admin Simulation — Bangalore
+          Demo Simulation — Bangalore
         </span>
       </div>
       <iframe
