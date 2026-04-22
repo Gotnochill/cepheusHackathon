@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── Simulation constants ─────────────────────────────────────────────────
   const TOTAL_TRUCKS          = 3;
   const TRUCK_ANIM_INTERVAL   = 450;          // ms per animation step
-  const LOADING_TIME_MS       = 3 * 60 * 1000;  // 3-minute demo load time
+  const LOADING_TIME_MS       = 10 * 1000;       // 10-second reload time for demo
   const DISPATCH_CHECK_MS     = 12 * 1000;    // check for dispatch every 12s
   const MIN_REPORTS_DISPATCH  = 2;            // reports before a truck is sent
   const REM_POINTS            = 4;            // markers removed per delivery
