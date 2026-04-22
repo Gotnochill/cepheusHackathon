@@ -266,6 +266,14 @@ html, body {
   color: #aaa !important;
 }
 
+.confirm-thanks {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: #27ae60;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
 .confirm-icon {
   width: 66px;
   height: 66px;
@@ -277,7 +285,7 @@ html, body {
   margin: 0 auto;
 }
 .confirm-icon--sent       { background: #eafaf1; color: #27ae60; }
-.confirm-icon--dispatched { background: #e8f4fb; color: #2980b9; }
+.confirm-icon--dispatched { background: #eafaf1; color: #27ae60; }
 
 .confirm-details {
   margin-top: 12px;
