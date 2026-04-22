@@ -100,6 +100,11 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('sos-dispatched', (payload) => {
+    io.emit('sos-dispatched', payload);
+    console.log(`SOS dispatched: ${payload.sosId} from ${payload.depotName} — ETA ${payload.etaMin} min`);
+  });
+
   socket.on('sos-resolved', (payload) => {
     delete pendingSOS[payload.sosId];
     io.emit('sos-resolved', payload);

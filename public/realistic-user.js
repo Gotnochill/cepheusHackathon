@@ -5,9 +5,22 @@ let userLng  = null;
 let userMap  = null;
 let sosId    = null;
 
-// ── Socket: watch for dispatch confirmation ───────────────────────────────────
+// Tracking state
+let trackingTruck  = null;
+let trackingRoute  = null;
+let etaInterval    = null;
+
+// ── Socket events ─────────────────────────────────────────────────────────────
+socket.on('sos-dispatched', payload => {
+  if (payload.sosId !== sosId) return;
+  showTracking(payload);
+});
+
 socket.on('sos-resolved', payload => {
-  if (payload.sosId === sosId) setState('dispatched');
+  if (payload.sosId !== sosId) return;
+  if (etaInterval) clearInterval(etaInterval);
+  if (trackingRoute) trackingRoute.remove();
+  setState('dispatched');
 });
 
 // ── DOM ready ─────────────────────────────────────────────────────────────────
@@ -23,8 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
     pos => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
-      // If browser gives a bogus IP-based location (common on desktop), snap
-      // to a random point inside the demo area around Atria Institute of Technology.
       if (lat >= 12.97 && lat <= 13.04 && lng >= 77.53 && lng <= 77.61) {
         userLat = lat;
         userLng = lng;
@@ -46,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function useFallbackLocation() {
-  // Atria Institute of Technology, Bangalore
   userLat = 13.0038;
   userLng = 77.5665;
   initMap();
@@ -65,11 +75,7 @@ function initMap() {
     .setView([userLat, userLng], 16);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(userMap);
   L.circleMarker([userLat, userLng], {
-    radius: 10,
-    color: '#c0392b',
-    fillColor: '#e74c3c',
-    fillOpacity: 0.85,
-    weight: 2,
+    radius: 10, color: '#c0392b', fillColor: '#e74c3c', fillOpacity: 0.85, weight: 2,
   }).addTo(userMap).bindPopup('Your location').openPopup();
 }
 
@@ -78,7 +84,9 @@ function setState(next) {
   document.querySelectorAll('.state').forEach(el => el.classList.remove('state--active'));
   const el = document.getElementById(`state-${next}`);
   if (el) el.classList.add('state--active');
-  if (next === 'form') setTimeout(() => userMap && userMap.invalidateSize(), 120);
+  if (next === 'form' || next === 'tracking') {
+    setTimeout(() => userMap && userMap.invalidateSize(), 120);
+  }
 }
 
 // ── SOS submission ────────────────────────────────────────────────────────────
@@ -100,18 +108,14 @@ function submitSOS() {
   sosId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
   const payload = {
-    id:        sosId,
-    name,
-    type,
-    room:      room || null,
-    lat:       userLat,
-    lng:       userLng,
-    needs,
-    severity,
+    id: sosId, name, type,
+    room: room || null,
+    lat: userLat, lng: userLng,
+    needs, severity,
     timestamp: new Date().toLocaleTimeString(),
   };
 
-  const btn    = document.getElementById('sos-submit-btn');
+  const btn = document.getElementById('sos-submit-btn');
   btn.disabled = true;
   btn.textContent = 'Sending...';
 
@@ -123,4 +127,56 @@ function submitSOS() {
   }
 
   setTimeout(() => setState('sent'), 500);
+}
+
+// ── Tracking ──────────────────────────────────────────────────────────────────
+function showTracking({ coords, etaMin, depotName }) {
+  setState('tracking');
+
+  // Update card
+  const depotEl = document.getElementById('tracking-depot');
+  if (depotEl) depotEl.textContent = `Responding from ${depotName}`;
+  updateEta(etaMin);
+
+  // Countdown every minute
+  let remaining = etaMin;
+  etaInterval = setInterval(() => {
+    remaining = Math.max(0, remaining - 1);
+    updateEta(remaining);
+    if (remaining === 0) clearInterval(etaInterval);
+  }, 60000);
+
+  if (!userMap || !coords || !coords.length) return;
+
+  // Remove previous tracking layers if any
+  if (trackingRoute) { trackingRoute.remove(); trackingRoute = null; }
+  if (trackingTruck) { userMap.removeLayer(trackingTruck); trackingTruck = null; }
+
+  // Fit map to show entire route
+  userMap.fitBounds(L.latLngBounds(coords), { padding: [48, 48], animate: true, duration: 0.8 });
+
+  // Draw route line
+  trackingRoute = L.polyline(coords, {
+    color: '#e74c3c', opacity: 0.55, weight: 3, dashArray: '6,4',
+  }).addTo(userMap);
+
+  // Animate the responder truck along the route
+  trackingTruck = new L.AnimatedMarker(coords, {
+    icon: L.divIcon({
+      html: '<div class="user-truck-icon">R</div>',
+      className: '', iconSize: [28, 28], iconAnchor: [14, 14],
+    }),
+    interval: 600,
+    autoStart: true,
+    onEnd: () => {
+      if (trackingRoute) { trackingRoute.remove(); trackingRoute = null; }
+    },
+  });
+  userMap.addLayer(trackingTruck);
+}
+
+function updateEta(minutes) {
+  const el = document.getElementById('tracking-eta');
+  if (!el) return;
+  el.textContent = minutes <= 0 ? 'Arriving now...' : `ETA ~${minutes} min`;
 }

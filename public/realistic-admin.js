@@ -215,6 +215,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const routeLine = L.polyline(coords, { color: '#e74c3c', opacity: 0.55, weight: 2.5 }).addTo(map);
     setStatus(`Dispatched from ${depot.name} — ETA ~${etaMin} min to ${entry.payload.name}`);
 
+    // Notify the user's portal so they can track the responder
+    socket.emit('sos-dispatched', { sosId, coords, etaMin, depotName: depot.name });
+
     const truck = new L.AnimatedMarker(coords, {
       icon: makeTruckIcon(depot.name[0]),
       interval: TRUCK_INTERVAL,

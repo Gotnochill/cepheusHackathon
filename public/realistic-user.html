@@ -90,6 +90,19 @@
     </div>
   </div>
 
+  <!-- State: tracking -->
+  <div id="state-tracking" class="state">
+    <div class="tracking-card">
+      <div class="tracking-header">
+        <div class="tracking-pulse"></div>
+        <span>Help is on the way</span>
+      </div>
+      <div id="tracking-eta" class="tracking-eta">Calculating route...</div>
+      <div id="tracking-depot" class="tracking-depot"></div>
+      <p class="tracking-sub">Stay at your location. Responders are en route to you.</p>
+    </div>
+  </div>
+
   <!-- State: dispatched -->
   <div id="state-dispatched" class="state">
     <div class="confirm-card confirm-card--dispatched">
@@ -102,6 +115,7 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="src/AnimatedMarker.js"></script>
   <script src="realistic-user.js"></script>
 </body>
 </html>
