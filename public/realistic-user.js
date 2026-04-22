@@ -21,8 +21,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   navigator.geolocation.getCurrentPosition(
     pos => {
-      userLat = pos.coords.latitude;
-      userLng = pos.coords.longitude;
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      // Bangalore bounding box — if browser gives a bogus IP-based location
+      // (common on desktop), snap to a random point inside the city instead.
+      if (lat >= 12.85 && lat <= 13.10 && lng >= 77.45 && lng <= 77.75) {
+        userLat = lat;
+        userLng = lng;
+      } else {
+        userLat = 12.87 + Math.random() * 0.21;
+        userLng = 77.47 + Math.random() * 0.26;
+        const note = document.getElementById('geo-note');
+        if (note) {
+          note.textContent = 'GPS placed you outside the demo area — location randomised within Bangalore for this demo.';
+          note.style.display = 'block';
+        }
+      }
       initMap();
       setState('form');
     },
