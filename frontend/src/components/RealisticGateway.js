@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
 import "./LandingPage.css";
 
 const ADMIN_PIN = "admin";
@@ -135,6 +136,17 @@ const RealisticGateway = () => {
               notified within seconds.
             </p>
             <span className="mode-cta mode-cta--user">Send Emergency SOS</span>
+
+            <div className="qr-block" onClick={e => e.stopPropagation()}>
+              <QRCodeSVG
+                value={`${window.location.origin}/realistic/user`}
+                size={112}
+                bgColor="#ffffff"
+                fgColor="#2c3e50"
+                level="M"
+              />
+              <span className="qr-label">Scan to submit SOS</span>
+            </div>
           </div>
         </div>
       </div>
