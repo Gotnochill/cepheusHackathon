@@ -5,3 +5,4 @@ frontend/build/
 .DS_Store
 *.log
 __pycache__/
+.server.pid
