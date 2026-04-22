@@ -41,10 +41,10 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
 const cityBounds = {
-  minLat: 21.20,
-  maxLat: 21.30,
-  minLng: 81.55,
-  maxLng: 81.70,
+  minLat: 12.87,
+  maxLat: 13.08,
+  minLng: 77.47,
+  maxLng: 77.73,
 };
 
 const low = 1000;

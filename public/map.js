@@ -7,30 +7,30 @@ document.addEventListener("DOMContentLoaded", () => {
       truckTime += 1;
     }, 100);
   
-    const map = L.map("map").setView([21.2514, 81.6296], 12.4);
+    const map = L.map("map").setView([12.9716, 77.5946], 12);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors"
     }).addTo(map);
-  
-    const raipurBoundary = [
-      [21.20, 81.55],
-      [21.20, 81.70],
-      [21.30, 81.70],
-      [21.30, 81.55]
+
+    const bangaloreBoundary = [
+      [12.85, 77.45],
+      [12.85, 77.75],
+      [13.10, 77.75],
+      [13.10, 77.45]
     ];
-    L.polygon(raipurBoundary, {
+    L.polygon(bangaloreBoundary, {
       color: "blue",
       opacity: 0.2,
       fillColor: "blue",
       fillOpacity: 0.1
     }).addTo(map);
-  
+
     // Define localities with initial report count and empty marker array
     const localities = [
-      { name: "Pandri", lat: 21.2800, lng: 81.68, count: 0, imp: 0, markers: [], importances: [] },
-      { name: "Naya Raipur", lat: 21.2100, lng: 81.6000, count: 0, imp: 0, markers: [], importances: [] },
-      { name: "Aranya", lat: 21.2300, lng: 81.6600, count: 0, imp: 0, markers: [], importances: [] },
-      { name: "Civil Lines", lat: 21.2750, lng: 81.59, count: 0, imp: 0, markers: [], importances: [] }
+      { name: "Koramangala", lat: 12.9352, lng: 77.6245, count: 0, imp: 0, markers: [], importances: [] },
+      { name: "Indiranagar",  lat: 12.9784, lng: 77.6408, count: 0, imp: 0, markers: [], importances: [] },
+      { name: "Jayanagar",    lat: 12.9250, lng: 77.5938, count: 0, imp: 0, markers: [], importances: [] },
+      { name: "Malleswaram",  lat: 13.0035, lng: 77.5703, count: 0, imp: 0, markers: [], importances: [] }
     ];
   
     let localityMarkers = {};
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localityMarkers[locality.name] = marker;
     });
   
-    const warehouseLocation = [21.2514, 81.6296];
+    const warehouseLocation = [12.9716, 77.5946];
     const warehouseIcon = L.divIcon({
       html: '<div style="width:20px; height:20px; background-color: grey; border:2px solid black;"></div>',
       className: "",
