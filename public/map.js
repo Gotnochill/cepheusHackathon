@@ -2,10 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ── Simulation constants ─────────────────────────────────────────────────
   const TOTAL_TRUCKS          = 3;
-  const TRUCK_ANIM_INTERVAL   = 700;          // ms per animation step
-  const LOADING_TIME_MS       = 15 * 60 * 1000; // 15-minute real-world load time
-  const DISPATCH_CHECK_MS     = 30 * 1000;    // check for dispatch every 30s
-  const MIN_REPORTS_DISPATCH  = 3;            // reports before a truck is sent
+  const TRUCK_ANIM_INTERVAL   = 450;          // ms per animation step
+  const LOADING_TIME_MS       = 3 * 60 * 1000;  // 3-minute demo load time
+  const DISPATCH_CHECK_MS     = 12 * 1000;    // check for dispatch every 12s
+  const MIN_REPORTS_DISPATCH  = 2;            // reports before a truck is sent
   const REM_POINTS            = 4;            // markers removed per delivery
 
   // ── Fleet ────────────────────────────────────────────────────────────────
@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ── Socket ────────────────────────────────────────────────────────────────
-  const socket = io(window.location.origin, { transports: ['websocket'] });
+  const socket = io(window.location.origin);
 
   socket.on('new-crisis', (report) => {
     const reportMarker = L.circleMarker(
