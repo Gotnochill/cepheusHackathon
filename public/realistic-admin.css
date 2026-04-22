@@ -295,12 +295,34 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-/* ── SOS list type line ───────────────────────────────────────────────────── */
+/* ── SOS list type + timestamp ───────────────────────────────────────────── */
 .si-type {
   font-size: 0.72rem;
   color: #888;
   margin-top: 2px;
   font-style: italic;
+}
+
+.si-time {
+  font-size: 0.68rem;
+  color: #bbb;
+  margin-top: 3px;
+  text-align: right;
+}
+
+/* Severity badge colour on the right-side sev label */
+.sos-sev-badge--critical { color: #e74c3c; font-weight: 800; }
+.sos-sev-badge--high     { color: #e67e22; }
+.sos-sev-badge--moderate { color: #f39c12; }
+.sos-sev-badge--low      { color: #27ae60; }
+
+/* Critical SOS marker — faster, more prominent pulse */
+.sos-marker--critical path {
+  animation: sos-pulse-critical 0.7s ease-in-out infinite !important;
+}
+@keyframes sos-pulse-critical {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
 }
 
 /* ── Emergency Services toast ────────────────────────────────────────────── */
