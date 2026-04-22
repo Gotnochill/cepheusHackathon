@@ -28,12 +28,15 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/disasters', disasterRoutes);
 
 // Serve static files from React frontend
-const __dirname = path.resolve(); // Necessary if using ES modules
+const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, 'frontend/build')));
 
-// Serve React app for non-API routes
+// Serve React app in production; fall back to map in development
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+  const buildIndex = path.join(__dirname, 'frontend/build', 'index.html');
+  res.sendFile(buildIndex, (err) => {
+    if (err) res.sendFile(path.join(__dirname, 'public', 'map.html'));
+  });
 });
 
 const server = http.createServer(app);
