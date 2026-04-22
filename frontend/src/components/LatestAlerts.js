@@ -4,16 +4,16 @@ import axios from 'axios';
 import './LatestAlerts.css';
 
 const LatestAlerts = () => {
-  const [disasters, setDisasters] = useState([]);
+  const [crises, setCrises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchDisasters = async () => {
+    const fetchCrises = async () => {
       try {
         const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
-        const response = await axios.get(`${apiUrl}/api/disasters`);
-        setDisasters(response.data);
+        const response = await axios.get(`${apiUrl}/api/crises`);
+        setCrises(response.data);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch data');
@@ -21,7 +21,7 @@ const LatestAlerts = () => {
       }
     };
 
-    fetchDisasters();
+    fetchCrises();
   }, []);
 
   if (loading) return <div>Loading...</div>;
@@ -29,17 +29,17 @@ const LatestAlerts = () => {
 
   return (
     <div className="alerts-container">
-      <h2>Latest Alerts and Requests</h2>
-      {disasters.length === 0 ? (
+      <h2>Latest Crisis Reports</h2>
+      {crises.length === 0 ? (
         <div>No live reports yet</div>
       ) : (
         <ul>
-          {disasters.map((disaster) => (
-            <li key={disaster._id}>
-              <h3>{disaster.name}</h3>
-              <p>{disaster.description}</p>
-              <p>Location: {disaster.location.coordinates.join(', ')}</p>
-              <p>Severity: {disaster.severity}</p>
+          {crises.map((crisis) => (
+            <li key={crisis._id}>
+              <h3>{crisis.name}</h3>
+              <p>{crisis.description}</p>
+              <p>Location: {crisis.location.coordinates.join(', ')}</p>
+              <p>Severity: {crisis.severity}</p>
             </li>
           ))}
         </ul>

@@ -158,3 +158,58 @@ h2 {
     from { opacity: 1; }
     to   { opacity: 0.5; }
 }
+
+/* Truck map icons */
+.truck-icon {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 11px; color: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.truck-available  { background: #27ae60; }
+.truck-delivering { background: #e74c3c; }
+.truck-returning  { background: #e67e22; }
+.truck-loading    { background: #7f8c8d; }
+
+/* Warehouse icon */
+.warehouse-icon {
+    width: 28px; height: 28px; background: #f39c12;
+    border: 2px solid #333; border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: bold; color: #333;
+}
+
+/* Fleet detail rows */
+#fleet-detail {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.truck-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.truck-badge {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: bold; color: #fff;
+    flex-shrink: 0;
+}
+.truck-badge--available  { background: #27ae60; }
+.truck-badge--delivering { background: #e74c3c; }
+.truck-badge--returning  { background: #e67e22; }
+.truck-badge--loading    { background: #7f8c8d; }
+
+.truck-label {
+    font-size: 0.78rem;
+    color: #555;
+}
+
+.fleet-num--loading {
+    color: #7f8c8d;
+}

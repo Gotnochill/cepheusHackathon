@@ -1,22 +1,22 @@
 import express from 'express';
-import Disaster from '../models/disaster.js';
+import Crisis from '../models/crisis.js';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const disasters = await Disaster.find();
-    res.json(disasters);
+    const crises = await Crisis.find().sort({ startDate: -1 }).limit(100);
+    res.json(crises);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
 router.post('/', async (req, res) => {
-  const disaster = new Disaster(req.body);
+  const crisis = new Crisis(req.body);
   try {
-    const newDisaster = await disaster.save();
-    res.status(201).json(newDisaster);
+    const saved = await crisis.save();
+    res.status(201).json(saved);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

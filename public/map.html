@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Live Disaster Reports - Bangalore</title>
+    <title>Live Crisis Reports - Bangalore</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-    <h2>Live Disaster Reports - Bangalore</h2>
+    <h2>Live Crisis Reports - Bangalore</h2>
     <div class="container">
         <div id="map"></div>
         <div id="report">
@@ -24,8 +24,22 @@
                         <span class="fleet-label">En Route</span>
                     </div>
                     <div class="fleet-stat">
-                        <span class="fleet-num fleet-num--total">3</span>
-                        <span class="fleet-label">Total</span>
+                        <span class="fleet-num fleet-num--loading" id="trucks-loading">0</span>
+                        <span class="fleet-label">Loading</span>
+                    </div>
+                </div>
+                <div id="fleet-detail">
+                    <div class="truck-row" id="truck-row-1">
+                        <span class="truck-badge truck-badge--available">1</span>
+                        <span class="truck-label">Available</span>
+                    </div>
+                    <div class="truck-row" id="truck-row-2">
+                        <span class="truck-badge truck-badge--available">2</span>
+                        <span class="truck-label">Available</span>
+                    </div>
+                    <div class="truck-row" id="truck-row-3">
+                        <span class="truck-badge truck-badge--available">3</span>
+                        <span class="truck-label">Available</span>
                     </div>
                 </div>
             </div>
