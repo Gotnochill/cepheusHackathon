@@ -39,10 +39,10 @@ app.get('*', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
-// Bangalore bounding box for faker data
+// Bounding box around Atria Institute of Technology for faker data
 const cityBounds = {
-  minLat: 12.87, maxLat: 13.08,
-  minLng: 77.47, maxLng: 77.73,
+  minLat: 12.97, maxLat: 13.04,
+  minLng: 77.53, maxLng: 77.61,
 };
 
 const MIN_DELAY = 1000;
@@ -63,7 +63,7 @@ const generateFakeCrisis = () => {
       { weight: 1, value: 'Critical' },
     ]),
     reportTime: new Date().toLocaleTimeString(),
-    needs: faker.helpers.arrayElements(['Food', 'Water', 'Shelter', 'Medical Aid'], 2),
+    needs: faker.helpers.arrayElements(['Medical', 'Fire', 'Security', 'Evacuation'], 2),
   };
 };
 

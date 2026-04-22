@@ -23,17 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
     pos => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
-      // Bangalore bounding box — if browser gives a bogus IP-based location
-      // (common on desktop), snap to a random point inside the city instead.
-      if (lat >= 12.85 && lat <= 13.10 && lng >= 77.45 && lng <= 77.75) {
+      // If browser gives a bogus IP-based location (common on desktop), snap
+      // to a random point inside the demo area around Atria Institute of Technology.
+      if (lat >= 12.97 && lat <= 13.04 && lng >= 77.53 && lng <= 77.61) {
         userLat = lat;
         userLng = lng;
       } else {
-        userLat = 12.87 + Math.random() * 0.21;
-        userLng = 77.47 + Math.random() * 0.26;
+        userLat = 12.97 + Math.random() * 0.07;
+        userLng = 77.53 + Math.random() * 0.08;
         const note = document.getElementById('geo-note');
         if (note) {
-          note.textContent = 'GPS placed you outside the demo area — location randomised within Bangalore for this demo.';
+          note.textContent = 'GPS placed you outside the venue area — location adjusted to the demo zone.';
           note.style.display = 'block';
         }
       }
@@ -46,13 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function useFallbackLocation() {
-  userLat = 12.9716;
-  userLng = 77.5946;
+  // Atria Institute of Technology, Bangalore
+  userLat = 13.0038;
+  userLng = 77.5665;
   initMap();
   setState('form');
   const note = document.getElementById('geo-note');
   if (note) {
-    note.textContent = 'Location unavailable — using city centre. Your pin may not be accurate.';
+    note.textContent = 'Location unavailable — using venue centre. Your pin may not be accurate.';
     note.style.display = 'block';
   }
 }
@@ -61,7 +62,7 @@ function useFallbackLocation() {
 function initMap() {
   if (userMap) return;
   userMap = L.map('user-map', { zoomControl: false, attributionControl: false })
-    .setView([userLat, userLng], 15);
+    .setView([userLat, userLng], 16);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(userMap);
   L.circleMarker([userLat, userLng], {
     radius: 10,
@@ -77,19 +78,20 @@ function setState(next) {
   document.querySelectorAll('.state').forEach(el => el.classList.remove('state--active'));
   const el = document.getElementById(`state-${next}`);
   if (el) el.classList.add('state--active');
-  // Let Leaflet recalculate size when form becomes visible
   if (next === 'form') setTimeout(() => userMap && userMap.invalidateSize(), 120);
 }
 
 // ── SOS submission ────────────────────────────────────────────────────────────
 function submitSOS() {
   const name     = document.getElementById('sos-name').value.trim();
+  const type     = document.getElementById('sos-type').value;
+  const room     = document.getElementById('sos-room').value.trim();
   const severity = document.getElementById('sos-severity').value;
   const needs    = Array.from(document.querySelectorAll('.need-check:checked')).map(el => el.value);
   const errEl    = document.getElementById('form-error');
 
-  if (!name || !severity || needs.length === 0) {
-    errEl.textContent = 'Please fill in your name, select at least one need, and choose a severity.';
+  if (!name || !type || !severity || needs.length === 0) {
+    errEl.textContent = 'Please fill in your name, crisis type, at least one resource need, and severity.';
     errEl.style.display = 'block';
     return;
   }
@@ -100,6 +102,8 @@ function submitSOS() {
   const payload = {
     id:        sosId,
     name,
+    type,
+    room:      room || null,
     lat:       userLat,
     lng:       userLng,
     needs,
@@ -115,7 +119,7 @@ function submitSOS() {
 
   const details = document.getElementById('confirm-details');
   if (details) {
-    details.innerHTML = `<b>${name}</b> &nbsp;&middot;&nbsp; ${needs.join(', ')} &nbsp;&middot;&nbsp; ${severity}`;
+    details.innerHTML = `<b>${name}</b> &nbsp;&middot;&nbsp; ${type} &nbsp;&middot;&nbsp; ${severity}${room ? '<br>' + room : ''}`;
   }
 
   setTimeout(() => setState('sent'), 500);

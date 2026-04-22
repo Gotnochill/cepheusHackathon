@@ -111,16 +111,17 @@ const RealisticGateway = () => {
           </button>
         </div>
 
-        <h1 className="title">Realistic Mode</h1>
-        <p className="subheading">Live coordination — Bangalore Region</p>
+        <h1 className="title">Live Coordination</h1>
+        <p className="subheading">Hospitality Emergency Response — Atria IT Area</p>
 
         <div className="mode-grid">
           <div className="mode-card" onClick={openModal}>
             <div className="mode-tag">ADMIN</div>
             <h2>Command Center</h2>
             <p>
-              Monitor live SOS requests, select a depot, tag supplies, and
-              dispatch trucks in real time. PIN-protected access.
+              Monitor live SOS requests from guests and staff, view crisis type
+              and location, dispatch the nearest response hub, and track
+              responders in real time. PIN-protected.
             </p>
             <span className="mode-cta">Login &amp; Enter</span>
           </div>
@@ -129,8 +130,9 @@ const RealisticGateway = () => {
             <div className="mode-tag mode-tag--user">SOS</div>
             <h2>Send SOS</h2>
             <p>
-              Share your GPS location and submit an emergency request with your
-              specific resource needs. Responders are notified instantly.
+              Guest or staff: share your GPS location, select crisis type and
+              room, then submit. Command centre and emergency services are
+              notified within seconds.
             </p>
             <span className="mode-cta mode-cta--user">Send Emergency SOS</span>
           </div>

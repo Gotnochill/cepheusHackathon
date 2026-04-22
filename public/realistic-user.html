@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Emergency SOS</title>
+  <title>Emergency SOS — Hospitality Response</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <link rel="stylesheet" href="realistic-user.css"/>
 </head>
@@ -32,19 +32,38 @@
     <label class="field-label">Your Name</label>
     <input type="text" id="sos-name" class="field-input" placeholder="Full name" autocomplete="name"/>
 
-    <label class="field-label">What do you need?</label>
+    <label class="field-label">Crisis Type</label>
+    <select id="sos-type" class="field-select">
+      <option value="">Select type of emergency...</option>
+      <option value="Medical Emergency">Medical Emergency</option>
+      <option value="Fire / Smoke">Fire / Smoke</option>
+      <option value="Security Incident">Security Incident</option>
+      <option value="Evacuation">Evacuation Required</option>
+      <option value="Structural Damage">Structural Damage</option>
+      <option value="Power Outage">Power Outage</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label class="field-label">Room / Location</label>
+    <input type="text" id="sos-room" class="field-input" placeholder="e.g. Room 204, Lobby, Pool Area"/>
+
+    <label class="field-label">Resources Needed</label>
     <div class="need-grid">
       <label class="need-toggle">
-        <input type="checkbox" class="need-check" value="Water">
-        <span>Water</span>
+        <input type="checkbox" class="need-check" value="Medical">
+        <span>Medical</span>
       </label>
       <label class="need-toggle">
-        <input type="checkbox" class="need-check" value="Food">
-        <span>Food</span>
+        <input type="checkbox" class="need-check" value="Fire">
+        <span>Fire</span>
       </label>
       <label class="need-toggle">
-        <input type="checkbox" class="need-check" value="Medicine">
-        <span>Medicine</span>
+        <input type="checkbox" class="need-check" value="Security">
+        <span>Security</span>
+      </label>
+      <label class="need-toggle">
+        <input type="checkbox" class="need-check" value="Evacuation">
+        <span>Evacuation</span>
       </label>
     </div>
 
@@ -76,7 +95,7 @@
     <div class="confirm-card confirm-card--dispatched">
       <div class="confirm-icon confirm-icon--dispatched">&#8679;</div>
       <h2>Responders Dispatched</h2>
-      <p>A supply truck has been assigned and is heading to your location.</p>
+      <p>An emergency response team has been assigned and is heading to your location.</p>
       <p class="confirm-sub">Please remain at your reported position.</p>
     </div>
   </div>

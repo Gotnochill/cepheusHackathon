@@ -20,22 +20,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const localityRoutes = {};
 
   // ── Map ──────────────────────────────────────────────────────────────────
-  const map = L.map('map').setView([12.9716, 77.5946], 12);
+  // Centred on Atria Institute of Technology, Bangalore
+  const map = L.map('map').setView([13.0038, 77.5665], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors',
   }).addTo(map);
 
   L.polygon([
-    [12.85, 77.45], [12.85, 77.75],
-    [13.10, 77.75], [13.10, 77.45],
+    [12.97, 77.53], [12.97, 77.61],
+    [13.04, 77.61], [13.04, 77.53],
   ], { color: 'blue', opacity: 0.2, fillColor: 'blue', fillOpacity: 0.06 }).addTo(map);
 
-  // ── Localities — four quadrants ───────────────────────────────────────────
+  // ── Localities — four zones around Atria IT ───────────────────────────────
   const localities = [
-    { name: 'Koramangala', lat: 12.91, lng: 77.67, count: 0, imp: 0, markers: [], importances: [] },
-    { name: 'Indiranagar',  lat: 13.04, lng: 77.69, count: 0, imp: 0, markers: [], importances: [] },
-    { name: 'Jayanagar',    lat: 12.90, lng: 77.50, count: 0, imp: 0, markers: [], importances: [] },
-    { name: 'Malleswaram',  lat: 13.04, lng: 77.51, count: 0, imp: 0, markers: [], importances: [] },
+    { name: 'Hebbal',         lat: 13.035, lng: 77.597, count: 0, imp: 0, markers: [], importances: [] },
+    { name: 'Yeshwanthpur',   lat: 12.994, lng: 77.549, count: 0, imp: 0, markers: [], importances: [] },
+    { name: 'Sadashivanagar', lat: 13.010, lng: 77.582, count: 0, imp: 0, markers: [], importances: [] },
+    { name: 'Jalahalli',      lat: 13.025, lng: 77.542, count: 0, imp: 0, markers: [], importances: [] },
   ];
 
   const localityMarkers = {};
@@ -47,16 +48,16 @@ document.addEventListener("DOMContentLoaded", () => {
     localityMarkers[l.name] = m;
   });
 
-  // ── Warehouse ─────────────────────────────────────────────────────────────
-  const WAREHOUSE = [12.9716, 77.5946];
+  // ── Command base (Atria IT) ───────────────────────────────────────────────
+  const WAREHOUSE = [13.0038, 77.5665];
   L.marker(WAREHOUSE, {
     icon: L.divIcon({
-      html: '<div class="warehouse-icon">WH</div>',
+      html: '<div class="warehouse-icon">AIT</div>',
       className: '',
-      iconSize: [28, 28],
-      iconAnchor: [14, 14],
+      iconSize: [34, 28],
+      iconAnchor: [17, 14],
     }),
-  }).addTo(map).bindPopup('<b>Central Warehouse</b>');
+  }).addTo(map).bindPopup('<b>Atria Institute of Technology — Command Base</b>');
 
   // ── Truck icon ────────────────────────────────────────────────────────────
   function makeTruckIcon(id, status) {

@@ -7,28 +7,30 @@ const LandingPage = () => {
 
   return (
     <div className="landing-container">
-      <h1 className="title">Disaster Management System</h1>
-      <p className="subheading">Bangalore Region — Real-time Relief Coordination</p>
+      <h1 className="title">Rapid Crisis Response</h1>
+      <p className="subheading">Hospitality Emergency Coordination Platform</p>
 
       <div className="mode-grid">
         <div className="mode-card" onClick={() => navigate("/admin")}>
           <div className="mode-tag">DEMO</div>
-          <h2>Demo Simulation</h2>
+          <h2>Live Simulation</h2>
           <p>
-            Watch the system in action. Live Bangalore map with simulated
-            disaster reports, priority routing, and automated truck dispatch.
+            Automated crisis detection across the venue area. Watch incoming
+            incidents get prioritised, routed, and dispatched to response teams
+            in real time.
           </p>
           <span className="mode-cta">Watch Demo</span>
         </div>
 
         <div className="mode-card mode-card--user" onClick={() => navigate("/realistic")}>
           <div className="mode-tag mode-tag--user">SOS</div>
-          <h2>Realistic Simulation</h2>
+          <h2>Live Coordination</h2>
           <p>
-            End-user mode. Log in, share your GPS location, and submit an
-            emergency SOS request with specific resource needs.
+            Guest or staff submits an SOS with GPS location and crisis type.
+            Command centre receives it instantly, dispatches the nearest
+            response team, and notifies emergency services.
           </p>
-          <span className="mode-cta mode-cta--user">Start Simulation</span>
+          <span className="mode-cta mode-cta--user">Start</span>
         </div>
       </div>
     </div>

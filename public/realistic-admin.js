@@ -1,26 +1,51 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // ── Constants ──────────────────────────────────────────────────────────────
-  const BANGALORE      = [12.9716, 77.5946];
+  const ATRIA_IT      = [13.0038, 77.5665];   // Atria Institute of Technology
   const TRUCK_INTERVAL = 600;
-  const TAGS           = ['Water', 'Food', 'Medicine'];
+  const TAGS           = ['Medical', 'Fire', 'Security', 'Evacuation'];
 
+  // Crisis type → map dot colour
+  const TYPE_COLOR = {
+    'Medical Emergency': '#3498db',
+    'Fire / Smoke':      '#e67e22',
+    'Security Incident': '#9b59b6',
+    'Evacuation':        '#27ae60',
+    'Structural Damage': '#795548',
+    'Power Outage':      '#f39c12',
+    default:             '#e74c3c',
+  };
+
+  // Hospitality response hubs around Atria IT (Anandanagar, Bangalore)
   const DEPOTS = [
-    { id: 'd1', name: 'North Depot', lat: 13.06, lng: 77.59 },
-    { id: 'd2', name: 'South Depot', lat: 12.88, lng: 77.60 },
-    { id: 'd3', name: 'East Depot',  lat: 12.97, lng: 77.71 },
-    { id: 'd4', name: 'West Depot',  lat: 12.97, lng: 77.48 },
+    { id: 'd1', name: 'Atria Convention',   lat: 13.012,  lng: 77.568 },
+    { id: 'd2', name: 'Grand Meridian',      lat: 12.993,  lng: 77.562 },
+    { id: 'd3', name: 'Fortune East Wing',   lat: 13.005,  lng: 77.583 },
+    { id: 'd4', name: 'ORR Residency Hub',   lat: 13.004,  lng: 77.550 },
   ];
 
   // ── Map ────────────────────────────────────────────────────────────────────
-  const map = L.map('map', { zoomControl: true }).setView(BANGALORE, 12);
+  const map = L.map('map', { zoomControl: true }).setView(ATRIA_IT, 14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors',
   }).addTo(map);
 
-  L.rectangle([[12.85, 77.45], [13.10, 77.75]], {
+  // Operational bounding box around Atria IT
+  L.rectangle([[12.97, 77.53], [13.04, 77.61]], {
     color: '#2c3e50', weight: 1.5, fillOpacity: 0.03, dashArray: '5,5',
   }).addTo(map);
+
+  // Atria IT marker (incident ground zero for demo)
+  L.marker(ATRIA_IT, {
+    icon: L.divIcon({
+      html: '<div class="ait-marker">AIT</div>',
+      className: '',
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+    }),
+  }).addTo(map).bindTooltip('Atria Institute of Technology', {
+    permanent: true, direction: 'top', className: 'depot-label', offset: [0, -20],
+  });
 
   // ── State ──────────────────────────────────────────────────────────────────
   const dispatch = { phase: 'idle', depot: null, sosId: null, tags: [] };
@@ -41,15 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   DEPOTS.forEach(depot => {
     const m = L.circleMarker([depot.lat, depot.lng], { ...DEPOT_STYLE.idle }).addTo(map);
-
-    // Permanent label above each depot
     m.bindTooltip(depot.name, {
-      permanent: true,
-      direction: 'top',
-      className: 'depot-label',
-      offset: [0, -16],
+      permanent: true, direction: 'top', className: 'depot-label', offset: [0, -16],
     });
-
     m.on('click', () => onDepotClick(depot));
     dMarkers[depot.id] = m;
   });
@@ -61,16 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Depot click ────────────────────────────────────────────────────────────
   function onDepotClick(depot) {
     if (busy[depot.id]) return;
-
     if (dispatch.depot && dispatch.depot.id !== depot.id) {
       setDepotStyle(dispatch.depot.id, 'idle');
     }
-
     dispatch.phase = 'depot_selected';
     dispatch.depot = depot;
     dispatch.sosId = null;
     dispatch.tags  = [];
-
     setDepotStyle(depot.id, 'selected');
     setInstruction(`${depot.name} selected — now click a red SOS marker to target it.`);
     renderTagPanel();
@@ -84,36 +100,29 @@ document.addEventListener('DOMContentLoaded', () => {
     dispatch.sosId = null;
     dispatch.tags  = [];
     renderTagPanel();
-    setInstruction('Click a grey depot on the map to begin.');
+    setInstruction('Click a grey response hub on the map to begin.');
   }
 
   // ── SOS click ──────────────────────────────────────────────────────────────
   function onSosClick(sosId) {
     const entry = sosMap[sosId];
     if (!entry) return;
-
-    // Epic 5: triangulation — always show on SOS click
     showTriangulation(entry);
-
     if (dispatch.phase === 'idle') {
-      setInstruction('Select a grey depot first, then click an SOS marker.');
+      setInstruction('Select a grey response hub first, then click an SOS marker.');
       return;
     }
-
     dispatch.phase = 'targeted';
     dispatch.sosId = sosId;
-    // Epic 5: smart tag pre-fill from SOS needs
     dispatch.tags  = entry.payload.needs.filter(n => TAGS.includes(n));
-
-    setInstruction(`Confirm tags and dispatch from ${dispatch.depot.name} to ${entry.payload.name}.`);
+    setInstruction(`Confirm response type and dispatch from ${dispatch.depot.name} to ${entry.payload.name}.`);
     renderTagPanel();
   }
 
-  // ── Triangulation (Epic 5) ─────────────────────────────────────────────────
+  // ── Triangulation ──────────────────────────────────────────────────────────
   function showTriangulation(entry) {
     clearTriLines(entry);
     const pt = L.latLng(entry.payload.lat, entry.payload.lng);
-
     DEPOTS
       .filter(d => !busy[d.id])
       .map(d => ({ d, dist: pt.distanceTo(L.latLng(d.lat, d.lng)) }))
@@ -126,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ).addTo(map);
         entry.triLines.push(line);
       });
-
     setTimeout(() => clearTriLines(entry), 3000);
   }
 
@@ -135,13 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
     entry.triLines = [];
   }
 
-  // ── Tag panel — Epics 4 + 5 ───────────────────────────────────────────────
+  // ── Tag panel ─────────────────────────────────────────────────────────────
   function renderTagPanel() {
     const panel = document.getElementById('tag-panel');
     if (!panel) return;
 
     if (dispatch.phase === 'idle') {
-      panel.innerHTML = '<p class="panel-hint">Select a depot to begin dispatch.</p>';
+      panel.innerHTML = '<p class="panel-hint">Select a response hub to begin dispatch.</p>';
       return;
     }
 
@@ -156,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
 
     const actionHTML = dispatch.phase === 'targeted'
-      ? `<button class="dispatch-btn" id="do-dispatch">Dispatch Truck &rarr;</button>`
+      ? `<button class="dispatch-btn" id="do-dispatch">Dispatch Responders &rarr;</button>`
       : `<p class="panel-hint">Now click a red SOS dot on the map.</p>`;
 
     panel.innerHTML = `
@@ -197,18 +205,24 @@ document.addEventListener('DOMContentLoaded', () => {
     dispatch.sosId  = null;
     dispatch.tags   = [];
     renderTagPanel();
-    setInstruction('Click a grey depot on the map to begin.');
+    setInstruction('Click a grey response hub on the map to begin.');
+
+    // Show emergency services notification banner
+    showEmsNotification(entry.payload.name, entry.payload.type);
+
     setStatus(`Routing: ${depot.name} → ${entry.payload.name}...`);
 
-    const coords = await fetchRoute(depot.lat, depot.lng, entry.payload.lat, entry.payload.lng);
-    if (!coords) {
+    const result = await fetchRoute(depot.lat, depot.lng, entry.payload.lat, entry.payload.lng);
+    if (!result) {
       busy[depot.id] = false;
       setDepotStyle(depot.id, 'idle');
       setStatus(`Could not fetch route for ${depot.name}.`);
       return;
     }
 
+    const { coords, etaMin } = result;
     const routeLine = L.polyline(coords, { color: '#e74c3c', opacity: 0.55, weight: 2.5 }).addTo(map);
+    setStatus(`Dispatched from ${depot.name} — ETA ~${etaMin} min to ${entry.payload.name}`);
 
     const truck = new L.AnimatedMarker(coords, {
       icon: makeTruckIcon(depot.name[0]),
@@ -247,13 +261,17 @@ document.addEventListener('DOMContentLoaded', () => {
     map.addLayer(truck);
   }
 
+  // ── Route fetch (returns coords + ETA) ────────────────────────────────────
   async function fetchRoute(lat1, lng1, lat2, lng2) {
     const url = `https://router.project-osrm.org/route/v1/car/${lng1},${lat1};${lng2},${lat2}?steps=true&geometries=geojson`;
     try {
       const r = await fetch(url);
       const d = await r.json();
       if (d.code === 'Ok' && d.routes.length) {
-        return d.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+        return {
+          coords: d.routes[0].geometry.coordinates.map(c => [c[1], c[0]]),
+          etaMin: Math.max(1, Math.ceil(d.routes[0].duration / 60)),
+        };
       }
     } catch { /* network error */ }
     return null;
@@ -268,20 +286,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ── Emergency Services notification ───────────────────────────────────────
+  function showEmsNotification(location, crisisType) {
+    const existing = document.getElementById('ems-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'ems-toast';
+    toast.className = 'ems-toast';
+    toast.innerHTML = `
+      <span class="ems-dot"></span>
+      <span><b>Emergency Services Notified</b> &mdash; ${crisisType || 'Incident'} at ${location} &mdash; 108 / 100 / 101 alerted</span>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('ems-toast--visible'), 50);
+    setTimeout(() => {
+      toast.classList.remove('ems-toast--visible');
+      setTimeout(() => toast.remove(), 400);
+    }, 5000);
+  }
+
   // ── Socket ─────────────────────────────────────────────────────────────────
   const socket = io(window.location.origin);
 
   socket.on('connect', () => {
     const dot   = document.getElementById('conn-dot');
     const label = document.getElementById('conn-label');
-    if (dot)   dot.className    = 'conn-dot conn-dot--on';
+    if (dot)   dot.className     = 'conn-dot conn-dot--on';
     if (label) label.textContent = 'Live';
   });
 
   socket.on('disconnect', () => {
     const dot   = document.getElementById('conn-dot');
     const label = document.getElementById('conn-label');
-    if (dot)   dot.className    = 'conn-dot conn-dot--off';
+    if (dot)   dot.className     = 'conn-dot conn-dot--off';
     if (label) label.textContent = 'Disconnected';
   });
 
@@ -303,10 +341,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function addSos(payload) {
     if (sosMap[payload.id]) return;
 
+    const typeColor = TYPE_COLOR[payload.type] || TYPE_COLOR.default;
     const marker = L.circleMarker([payload.lat, payload.lng], {
       radius: 9,
-      color: '#c0392b',
-      fillColor: '#e74c3c',
+      color: typeColor,
+      fillColor: typeColor,
       fillOpacity: 0.85,
       weight: 2,
       className: 'sos-marker-pulse',
@@ -314,7 +353,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     marker.bindPopup(`
       <b>${payload.name}</b><br>
-      <span style="color:#555">Needs: ${payload.needs.join(', ')}</span><br>
+      <span style="color:#555;font-size:0.85em">${payload.type || 'Emergency'}</span><br>
+      Needs: <b>${payload.needs.join(', ')}</b><br>
+      ${payload.room ? `Location: <b>${payload.room}</b><br>` : ''}
       Severity: <b style="color:#e74c3c">${payload.severity}</b><br>
       <small style="color:#999">${payload.timestamp}</small>
     `);
@@ -349,10 +390,11 @@ document.addEventListener('DOMContentLoaded', () => {
     div.innerHTML = `
       <span class="si-name">${payload.name}</span>
       <span class="si-sev">${payload.severity}</span>
+      <div class="si-type">${payload.type || 'Emergency'}${payload.room ? ' &middot; ' + payload.room : ''}</div>
       <div class="si-needs">${payload.needs.join(' · ')}</div>
     `;
     div.addEventListener('click', () => {
-      map.flyTo([payload.lat, payload.lng], 15, { animate: true, duration: 0.8 });
+      map.flyTo([payload.lat, payload.lng], 16, { animate: true, duration: 0.8 });
       setTimeout(() => onSosClick(payload.id), 850);
     });
     list.prepend(div);
@@ -387,18 +429,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const SIM_NAMES = [
     'Ravi Kumar', 'Priya Sharma', 'Arun Nair', 'Deepa Reddy',
     'Suresh Patel', 'Anita Rao', 'Vikram Singh', 'Meena Iyer',
+    'Kiran Bhat', 'Sunita Das', 'Arjun Mehta', 'Divya Nair',
   ];
-  const SIM_NEEDS_POOL = ['Water', 'Food', 'Medicine'];
+  const SIM_NEEDS_POOL = ['Medical', 'Fire', 'Security', 'Evacuation'];
   const SIM_SEVS       = ['Low', 'Moderate', 'High', 'Critical'];
+  const SIM_TYPES      = ['Medical Emergency', 'Fire / Smoke', 'Security Incident', 'Evacuation'];
+  const SIM_ROOMS      = ['Room 204', 'Lobby', 'Banquet Hall A', 'Parking Lot B', 'Restaurant - Level 2', 'Conference Room 3', 'Poolside'];
 
   document.getElementById('sim-sos-btn')?.addEventListener('click', () => {
-    const lat      = 12.87 + Math.random() * 0.21;
-    const lng      = 77.47 + Math.random() * 0.26;
+    // Randomise within the Atria IT area bounding box
+    const lat      = 12.97 + Math.random() * 0.07;
+    const lng      = 77.53 + Math.random() * 0.08;
     const shuffled = [...SIM_NEEDS_POOL].sort(() => Math.random() - 0.5);
+    const type     = SIM_TYPES[Math.floor(Math.random() * SIM_TYPES.length)];
     const payload  = {
       id:        `sim-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
       name:      SIM_NAMES[Math.floor(Math.random() * SIM_NAMES.length)],
       lat, lng,
+      type,
+      room:      SIM_ROOMS[Math.floor(Math.random() * SIM_ROOMS.length)],
       needs:     shuffled.slice(0, Math.floor(Math.random() * 2) + 1),
       severity:  SIM_SEVS[Math.floor(Math.random() * SIM_SEVS.length)],
       timestamp: new Date().toLocaleTimeString(),
