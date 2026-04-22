@@ -383,5 +383,28 @@ document.addEventListener('DOMContentLoaded', () => {
     el.style.display = msg ? 'block' : 'none';
   }
 
+  // ── Simulate SOS (demo helper) ─────────────────────────────────────────────
+  const SIM_NAMES = [
+    'Ravi Kumar', 'Priya Sharma', 'Arun Nair', 'Deepa Reddy',
+    'Suresh Patel', 'Anita Rao', 'Vikram Singh', 'Meena Iyer',
+  ];
+  const SIM_NEEDS_POOL = ['Water', 'Food', 'Medicine'];
+  const SIM_SEVS       = ['Low', 'Moderate', 'High', 'Critical'];
+
+  document.getElementById('sim-sos-btn')?.addEventListener('click', () => {
+    const lat      = 12.87 + Math.random() * 0.21;
+    const lng      = 77.47 + Math.random() * 0.26;
+    const shuffled = [...SIM_NEEDS_POOL].sort(() => Math.random() - 0.5);
+    const payload  = {
+      id:        `sim-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+      name:      SIM_NAMES[Math.floor(Math.random() * SIM_NAMES.length)],
+      lat, lng,
+      needs:     shuffled.slice(0, Math.floor(Math.random() * 2) + 1),
+      severity:  SIM_SEVS[Math.floor(Math.random() * SIM_SEVS.length)],
+      timestamp: new Date().toLocaleTimeString(),
+    };
+    socket.emit('sos-report', payload);
+  });
+
   renderTagPanel();
 });

@@ -34,6 +34,10 @@
         <div class="s-empty" id="sos-empty">No active SOS reports.</div>
       </div>
 
+      <div class="s-section">
+        <button class="sim-sos-btn" id="sim-sos-btn">+ Simulate SOS</button>
+      </div>
+
       <div class="s-section s-section--dispatch">
         <div class="s-label">Dispatch</div>
         <div id="instruction" class="instruction-text">Click a grey depot on the map to begin.</div>
@@ -45,7 +49,7 @@
   </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
   <script src="src/AnimatedMarker.js"></script>
   <script src="realistic-admin.js"></script>
 </body>

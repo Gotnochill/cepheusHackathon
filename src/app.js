@@ -67,13 +67,24 @@ const generateFakeCrisis = () => {
   };
 };
 
+// In-memory SOS cache — lets late-joining admins catch up on any missed reports
+const pendingSOS = {};
+
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
+  // Replay all unresolved SOS to the newly connected client
+  const pending = Object.values(pendingSOS);
+  if (pending.length > 0) {
+    pending.forEach(p => socket.emit('sos-report', p));
+    console.log(`Replayed ${pending.length} pending SOS to ${socket.id}`);
+  }
+
   // ── Phase 2: Realistic Mode ────────────────────────────────────────────────
   socket.on('sos-report', async (payload) => {
+    pendingSOS[payload.id] = payload;
     io.emit('sos-report', payload);
-    console.log('SOS report from', payload.name, '—', payload.severity);
+    console.log(`SOS [${payload.id}] from ${payload.name} — ${payload.severity} (${Object.keys(pendingSOS).length} pending)`);
     try {
       await new Crisis({
         name: payload.name,
@@ -90,7 +101,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sos-resolved', (payload) => {
+    delete pendingSOS[payload.sosId];
     io.emit('sos-resolved', payload);
+    console.log(`SOS resolved: ${payload.sosId} (${Object.keys(pendingSOS).length} pending)`);
   });
 });
 
