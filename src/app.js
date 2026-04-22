@@ -47,8 +47,8 @@ const cityBounds = {
   maxLng: 77.73,
 };
 
-const low = 1000;
-const high = 3000;
+const low = 2000;
+const high = 5000;
 
 const generateFakeReport = () => {
   const latitude = faker.number.float({ 

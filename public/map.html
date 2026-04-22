@@ -11,10 +11,35 @@
     <div class="container">
         <div id="map"></div>
         <div id="report">
-            <h3>Disaster Reports</h3>
-            <div id="report-list"></div>
-            <h3>Assistance Counters</h3>
-            <div id="locality-counters"></div>
+
+            <div class="panel-section">
+                <h3>Fleet Status</h3>
+                <div class="fleet-grid">
+                    <div class="fleet-stat">
+                        <span class="fleet-num" id="trucks-available">3</span>
+                        <span class="fleet-label">Available</span>
+                    </div>
+                    <div class="fleet-stat">
+                        <span class="fleet-num fleet-num--active" id="trucks-en-route">0</span>
+                        <span class="fleet-label">En Route</span>
+                    </div>
+                    <div class="fleet-stat">
+                        <span class="fleet-num fleet-num--total">3</span>
+                        <span class="fleet-label">Total</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>Zone Pressure</h3>
+                <div id="locality-counters"></div>
+            </div>
+
+            <div class="panel-section">
+                <h3>Incoming Reports</h3>
+                <div id="report-list"></div>
+            </div>
+
         </div>
     </div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
