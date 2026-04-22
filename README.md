@@ -1,50 +1,50 @@
-# Disaster Management Platform — Bangalore
+# Rapid Crisis Response
 
-Real-time disaster relief coordination platform for Bangalore.
-Fork of the original Disaster Manager (Raipur), deployed independently.
+Live: https://cepheushackathon-production.up.railway.app
 
-Original repo: https://github.com/Gotnochill/Disaster-Manager
-Original deployment: https://disaster-manager.onrender.com
+Hospitality emergency coordination platform. Guests and staff submit SOS requests with GPS location and crisis type. The command centre receives them in real time, dispatches the nearest response team, and notifies emergency services.
+
+---
 
 ## Run Locally
 
-Prerequisites: Node.js, MongoDB Atlas account.
+Prerequisites: Node.js 18+, a MongoDB Atlas URI in a `.env` file.
+
+Create a `.env` file in the project root:
+
+```
+MONGODB_URI=your_mongodb_atlas_uri
+PORT=3000
+```
+
+Then build the frontend and start the server:
 
 ```bash
-git clone https://github.com/Gotnochill/cepheusHackathon.git
-cd cepheusHackathon
-
-# Install backend dependencies
-npm install
-
-# Install and build the React frontend
+# First time only — build the React frontend
 cd frontend && npm install && npm run build && cd ..
-
-# Create .env from .env.example and fill in MONGODB_URI
-cp .env.example .env
+npm install
 ```
-
-Start the server:
 
 ```bash
-npm run dev
+# Start
+./start.sh
+
+# Stop when done
+./end.sh
 ```
 
-Open http://localhost:3000. Everything runs from this single URL.
+The server starts on http://localhost:3000 and the browser opens automatically.
 
-- / — landing page (choose a mode)
-- /admin — Demo Simulation (live Bangalore map, faker data, truck dispatch)
-- /user — Realistic Simulation (login, GPS, SOS form)
+## Routes
 
-## Deploy on Render
+```
+/                     Landing page
+/admin                Demo Simulation — auto-dispatching trucks, live faker data
+/realistic            Live Coordination gateway
+/realistic/admin      Command Centre  (PIN: admin)
+/realistic/user       Guest / Staff SOS portal
+```
 
-- Build Command: `npm install && cd frontend && npm install && npm run build`
-- Start Command: `npm start`
-- Environment Variables: `MONGODB_URI`
+## Deploy
 
-## API
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | /api/disasters | List recent disaster reports |
-| POST | /api/disasters | Submit a disaster report |
+The app is configured for Railway. Connect the GitHub repo, set `MONGODB_URI` as an environment variable, and Railway handles the rest using `railway.json`.
