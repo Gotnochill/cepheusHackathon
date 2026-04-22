@@ -1,22 +1,16 @@
 #!/usr/bin/env bash
-export PATH="$PATH:/c/Program Files/nodejs"
 
-if [ -f .server.pid ]; then
-  PID=$(cat .server.pid)
-  if kill -0 "$PID" 2>/dev/null; then
-    kill "$PID"
-    echo "Server stopped (PID $PID)"
-  else
-    echo "Server was not running (stale PID $PID)"
-  fi
-  rm .server.pid
+# Find the PID listening on port 3000
+PID=$(netstat -ano 2>/dev/null | grep ":3000 " | grep "LISTENING" | awk '{print $5}' | head -1)
+
+if [ -n "$PID" ] && [ "$PID" != "0" ]; then
+  taskkill //PID "$PID" //F > /dev/null 2>&1 && echo "Server stopped (PID $PID)" || echo "Failed to stop PID $PID"
 else
-  # Fallback: kill any node process running this app
-  PIDS=$(ps aux | grep "node src/app.js" | grep -v grep | awk '{print $1}')
-  if [ -n "$PIDS" ]; then
-    echo "$PIDS" | xargs kill
-    echo "Server stopped"
-  else
-    echo "No server process found"
-  fi
+  # Fallback: kill all node.exe processes
+  taskkill //IM node.exe //F > /dev/null 2>&1 && echo "Server stopped (killed node.exe)" || echo "No server running"
 fi
+
+# Clean up PID file if present
+[ -f .server.pid ] && rm .server.pid
+
+echo "Done."
