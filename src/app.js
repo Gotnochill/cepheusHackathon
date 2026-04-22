@@ -45,8 +45,8 @@ const cityBounds = {
   minLng: 77.53, maxLng: 77.61,
 };
 
-const MIN_DELAY = 1000;
-const MAX_DELAY = 2500;
+const MIN_DELAY = 2500;
+const MAX_DELAY = 5000;
 
 const generateFakeCrisis = () => {
   const latitude  = faker.number.float({ min: cityBounds.minLat, max: cityBounds.maxLat, precision: 0.0001 });
