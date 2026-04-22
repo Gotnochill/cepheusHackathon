@@ -68,35 +68,59 @@ const generateFakeCrisis = () => {
 };
 
 io.on('connection', (socket) => {
-  console.log('Client connected');
+  console.log('Client connected:', socket.id);
 
-  (function loop() {
-    const delay = Math.round(Math.random() * (MAX_DELAY - MIN_DELAY)) + MIN_DELAY;
-    setTimeout(async () => {
-      const report = generateFakeCrisis();
-      io.emit('new-crisis', report);
+  // ── Phase 2: Realistic Mode ────────────────────────────────────────────────
+  socket.on('sos-report', async (payload) => {
+    io.emit('sos-report', payload);
+    console.log('SOS report from', payload.name, '—', payload.severity);
+    try {
+      await new Crisis({
+        name: payload.name,
+        type: 'SOS',
+        location: { type: 'Point', coordinates: [payload.lng, payload.lat] },
+        severity: mapSeverityToNumber(payload.severity),
+        startDate: new Date(),
+        description: `Needs: ${payload.needs.join(', ')}`,
+        affectedAreas: [],
+      }).save();
+    } catch (err) {
+      console.error('SOS save error:', err.message);
+    }
+  });
 
-      try {
-        await new Crisis({
-          name: report.victimName,
-          type: 'Crisis',
-          location: {
-            type: 'Point',
-            coordinates: [report.location.longitude, report.location.latitude],
-          },
-          severity: mapSeverityToNumber(report.severity),
-          startDate: new Date(),
-          description: `Needs: ${report.needs.join(', ')}`,
-          affectedAreas: [],
-        }).save();
-      } catch (err) {
-        console.error('Error saving crisis:', err.message);
-      }
-
-      loop();
-    }, delay);
-  })();
+  socket.on('sos-resolved', (payload) => {
+    io.emit('sos-resolved', payload);
+  });
 });
+
+(function crisisLoop() {
+  const delay = Math.round(Math.random() * (MAX_DELAY - MIN_DELAY)) + MIN_DELAY;
+  setTimeout(async () => {
+    const report = generateFakeCrisis();
+    io.emit('new-crisis', report);
+    console.log('Emitted new-crisis:', report.victimName, '—', report.severity);
+
+    try {
+      await new Crisis({
+        name: report.victimName,
+        type: 'Crisis',
+        location: {
+          type: 'Point',
+          coordinates: [report.location.longitude, report.location.latitude],
+        },
+        severity: mapSeverityToNumber(report.severity),
+        startDate: new Date(),
+        description: `Needs: ${report.needs.join(', ')}`,
+        affectedAreas: [],
+      }).save();
+    } catch (err) {
+      console.error('Error saving crisis:', err.message);
+    }
+
+    crisisLoop();
+  }, delay);
+})();
 
 function mapSeverityToNumber(severity) {
   switch (severity) {

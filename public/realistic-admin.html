@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Command Center</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="realistic-admin.css"/>
+</head>
+<body>
+  <div id="topbar">
+    <span class="topbar-title">Admin Command Center</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="conn-label" id="conn-label">Connecting...</span>
+      <span class="conn-dot" id="conn-dot"></span>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="map"></div>
+
+    <div id="sidebar">
+
+      <div class="s-section">
+        <div class="s-label">
+          Live SOS Reports
+          <span class="sos-badge" id="sos-count">0</span>
+        </div>
+        <div id="sos-list"></div>
+        <div class="s-empty" id="sos-empty">No active SOS reports.</div>
+      </div>
+
+      <div class="s-section s-section--dispatch">
+        <div class="s-label">Dispatch</div>
+        <div id="instruction" class="instruction-text">Click a grey depot to begin.</div>
+        <div id="tag-panel"></div>
+        <div id="dispatch-status" class="dispatch-status" style="display:none"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="src/AnimatedMarker.js"></script>
+  <script src="realistic-admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Emergency SOS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="realistic-user.css"/>
+</head>
+<body>
+
+  <!-- Map always renders in background -->
+  <div id="user-map"></div>
+
+  <!-- State: locating -->
+  <div id="state-locating" class="state state--active">
+    <div class="locating-content">
+      <div class="spinner"></div>
+      <h2>Acquiring Location</h2>
+      <p>Please allow location access when prompted.</p>
+    </div>
+  </div>
+
+  <!-- State: form -->
+  <div id="state-form" class="state">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title">Emergency SOS</h2>
+
+    <div id="form-error" class="form-error" style="display:none"></div>
+    <div id="geo-note" class="geo-note" style="display:none"></div>
+
+    <label class="field-label">Your Name</label>
+    <input type="text" id="sos-name" class="field-input" placeholder="Full name" autocomplete="name"/>
+
+    <label class="field-label">What do you need?</label>
+    <div class="need-grid">
+      <label class="need-toggle">
+        <input type="checkbox" class="need-check" value="Water">
+        <span>Water</span>
+      </label>
+      <label class="need-toggle">
+        <input type="checkbox" class="need-check" value="Food">
+        <span>Food</span>
+      </label>
+      <label class="need-toggle">
+        <input type="checkbox" class="need-check" value="Medicine">
+        <span>Medicine</span>
+      </label>
+    </div>
+
+    <label class="field-label">Severity</label>
+    <select id="sos-severity" class="field-select">
+      <option value="">Select severity...</option>
+      <option value="Low">Low — Stable, not life-threatening</option>
+      <option value="Moderate">Moderate — Needs attention soon</option>
+      <option value="High">High — Urgent assistance needed</option>
+      <option value="Critical">Critical — Life in immediate danger</option>
+    </select>
+
+    <button class="sos-btn" id="sos-submit-btn">Send SOS</button>
+  </div>
+
+  <!-- State: sent -->
+  <div id="state-sent" class="state">
+    <div class="confirm-card">
+      <div class="confirm-icon confirm-icon--sent">&#10003;</div>
+      <h2>SOS Sent</h2>
+      <p>Your location and request have been transmitted to the command centre.</p>
+      <div id="confirm-details" class="confirm-details"></div>
+      <p class="confirm-sub">Stay where you are. Help is being coordinated.</p>
+    </div>
+  </div>
+
+  <!-- State: dispatched -->
+  <div id="state-dispatched" class="state">
+    <div class="confirm-card confirm-card--dispatched">
+      <div class="confirm-icon confirm-icon--dispatched">&#8679;</div>
+      <h2>Responders Dispatched</h2>
+      <p>A supply truck has been assigned and is heading to your location.</p>
+      <p class="confirm-sub">Please remain at your reported position.</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="realistic-user.js"></script>
+</body>
+</html>

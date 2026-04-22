@@ -21,7 +21,7 @@ const LandingPage = () => {
           <span className="mode-cta">Watch Demo</span>
         </div>
 
-        <div className="mode-card mode-card--user" onClick={() => navigate("/user")}>
+        <div className="mode-card mode-card--user" onClick={() => navigate("/realistic")}>
           <div className="mode-tag mode-tag--user">SOS</div>
           <h2>Realistic Simulation</h2>
           <p>
