@@ -10,6 +10,10 @@
 <body>
   <div id="topbar">
     <span class="topbar-title">Admin Command Center</span>
+    <div class="topbar-stats">
+      <span class="stat-pill">Received: <b id="stat-received">0</b></span>
+      <span class="stat-pill stat-pill--resolved">Resolved: <b id="stat-resolved">0</b></span>
+    </div>
     <div style="display:flex;align-items:center;gap:8px">
       <span class="conn-label" id="conn-label">Connecting...</span>
       <span class="conn-dot" id="conn-dot"></span>
@@ -23,7 +27,7 @@
 
       <div class="s-section">
         <div class="s-label">
-          Live SOS Reports
+          Live SOS Queue
           <span class="sos-badge" id="sos-count">0</span>
         </div>
         <div id="sos-list"></div>
@@ -32,7 +36,7 @@
 
       <div class="s-section s-section--dispatch">
         <div class="s-label">Dispatch</div>
-        <div id="instruction" class="instruction-text">Click a grey depot to begin.</div>
+        <div id="instruction" class="instruction-text">Click a grey depot on the map to begin.</div>
         <div id="tag-panel"></div>
         <div id="dispatch-status" class="dispatch-status" style="display:none"></div>
       </div>

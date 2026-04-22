@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // ── Constants ──────────────────────────────────────────────────────────────
-  const BANGALORE     = [12.9716, 77.5946];
+  const BANGALORE      = [12.9716, 77.5946];
   const TRUCK_INTERVAL = 600;
-  const TAGS          = ['Water', 'Food', 'Medicine'];
+  const TAGS           = ['Water', 'Food', 'Medicine'];
 
   const DEPOTS = [
     { id: 'd1', name: 'North Depot', lat: 13.06, lng: 77.59 },
@@ -23,10 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }).addTo(map);
 
   // ── State ──────────────────────────────────────────────────────────────────
-  // dispatch.phase: 'idle' | 'depot_selected' | 'targeted'
   const dispatch = { phase: 'idle', depot: null, sosId: null, tags: [] };
-  const sosMap   = {};   // sosId → { payload, marker, triLines: [] }
-  const busy     = {};   // depotId → boolean
+  const sosMap   = {};
+  const busy     = {};
+  let statsReceived = 0;
+  let statsResolved = 0;
   DEPOTS.forEach(d => { busy[d.id] = false; });
 
   // ── Depot markers ──────────────────────────────────────────────────────────
@@ -34,13 +35,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const DEPOT_STYLE = {
     idle:     { radius: 14, color: '#7f8c8d', fillColor: '#bdc3c7', fillOpacity: 0.65, weight: 2 },
-    selected: { radius: 16, color: '#007bff', fillColor: '#66b2ff', fillOpacity: 0.80, weight: 3 },
+    selected: { radius: 16, color: '#007bff', fillColor: '#66b2ff', fillOpacity: 0.85, weight: 3 },
     busy:     { radius: 14, color: '#e67e22', fillColor: '#f6c176', fillOpacity: 0.70, weight: 2 },
   };
 
   DEPOTS.forEach(depot => {
     const m = L.circleMarker([depot.lat, depot.lng], { ...DEPOT_STYLE.idle }).addTo(map);
-    m.bindTooltip(`<b>${depot.name}</b><br><small>Click to select</small>`, { direction: 'top' });
+
+    // Permanent label above each depot
+    m.bindTooltip(depot.name, {
+      permanent: true,
+      direction: 'top',
+      className: 'depot-label',
+      offset: [0, -16],
+    });
+
     m.on('click', () => onDepotClick(depot));
     dMarkers[depot.id] = m;
   });
@@ -63,11 +72,22 @@ document.addEventListener('DOMContentLoaded', () => {
     dispatch.tags  = [];
 
     setDepotStyle(depot.id, 'selected');
-    setInstruction(`${depot.name} selected — click a red SOS marker to target.`);
+    setInstruction(`${depot.name} selected — now click a red SOS marker to target it.`);
     renderTagPanel();
   }
 
-  // ── SOS marker click ───────────────────────────────────────────────────────
+  // ── Cancel selection ───────────────────────────────────────────────────────
+  function cancelDispatch() {
+    if (dispatch.depot) setDepotStyle(dispatch.depot.id, 'idle');
+    dispatch.phase = 'idle';
+    dispatch.depot = null;
+    dispatch.sosId = null;
+    dispatch.tags  = [];
+    renderTagPanel();
+    setInstruction('Click a grey depot on the map to begin.');
+  }
+
+  // ── SOS click ──────────────────────────────────────────────────────────────
   function onSosClick(sosId) {
     const entry = sosMap[sosId];
     if (!entry) return;
@@ -82,10 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dispatch.phase = 'targeted';
     dispatch.sosId = sosId;
-    // Epic 5: smart tag pre-fill from SOS request
+    // Epic 5: smart tag pre-fill from SOS needs
     dispatch.tags  = entry.payload.needs.filter(n => TAGS.includes(n));
 
-    setInstruction(`Ready — ${dispatch.depot.name} → ${entry.payload.name}.`);
+    setInstruction(`Confirm tags and dispatch from ${dispatch.depot.name} to ${entry.payload.name}.`);
     renderTagPanel();
   }
 
@@ -127,10 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tagHTML = TAGS.map(t => {
       const active = dispatch.tags.includes(t);
-      // smart highlight: tag matches SOS request but not yet active
       const smart  = !active
         && dispatch.phase === 'targeted'
-        && dispatch.sosId
         && sosMap[dispatch.sosId]?.payload.needs.includes(t);
       return `<button
         class="tag-btn${active ? ' tag-btn--active' : ''}${smart ? ' tag-btn--smart' : ''}"
@@ -139,12 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const actionHTML = dispatch.phase === 'targeted'
       ? `<button class="dispatch-btn" id="do-dispatch">Dispatch Truck &rarr;</button>`
-      : `<p class="panel-hint">Now click a red SOS marker to target.</p>`;
+      : `<p class="panel-hint">Now click a red SOS dot on the map.</p>`;
 
     panel.innerHTML = `
       <div class="panel-depot">${dispatch.depot.name}</div>
       <div class="tag-group">${tagHTML}</div>
       ${actionHTML}
+      <button class="cancel-btn" id="do-cancel">Cancel Selection</button>
     `;
 
     panel.querySelectorAll('.tag-btn').forEach(btn => {
@@ -158,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('do-dispatch')?.addEventListener('click', doDispatch);
+    document.getElementById('do-cancel')?.addEventListener('click', cancelDispatch);
   }
 
   // ── Dispatch ───────────────────────────────────────────────────────────────
@@ -170,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const entry = sosMap[sosId];
     if (!entry) return;
 
-    // Lock depot and reset dispatch state immediately
     busy[depot.id]  = true;
     setDepotStyle(depot.id, 'busy');
     dispatch.phase  = 'idle';
@@ -178,8 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
     dispatch.sosId  = null;
     dispatch.tags   = [];
     renderTagPanel();
-    setInstruction('Click a grey depot to begin.');
-    setStatus(`Routing from ${depot.name} to ${entry.payload.name}...`);
+    setInstruction('Click a grey depot on the map to begin.');
+    setStatus(`Routing: ${depot.name} → ${entry.payload.name}...`);
 
     const coords = await fetchRoute(depot.lat, depot.lng, entry.payload.lat, entry.payload.lng);
     if (!coords) {
@@ -199,10 +218,11 @@ document.addEventListener('DOMContentLoaded', () => {
         map.removeLayer(routeLine);
         map.removeLayer(truck);
 
-        // Notify server → user portal
         socket.emit('sos-resolved', { sosId, depotId: depot.id });
         removeSos(sosId);
-        setStatus(`Supplies delivered to ${entry.payload.name}. ${depot.name} returning...`);
+        statsResolved++;
+        updateStats();
+        setStatus(`Delivered to ${entry.payload.name}. ${depot.name} returning...`);
 
         const back     = [...coords].reverse();
         const backLine = L.polyline(back, {
@@ -254,22 +274,29 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('connect', () => {
     const dot   = document.getElementById('conn-dot');
     const label = document.getElementById('conn-label');
-    if (dot)   dot.className   = 'conn-dot conn-dot--on';
-    if (label) label.textContent = 'Connected';
+    if (dot)   dot.className    = 'conn-dot conn-dot--on';
+    if (label) label.textContent = 'Live';
   });
 
   socket.on('disconnect', () => {
     const dot   = document.getElementById('conn-dot');
     const label = document.getElementById('conn-label');
-    if (dot)   dot.className   = 'conn-dot conn-dot--off';
+    if (dot)   dot.className    = 'conn-dot conn-dot--off';
     if (label) label.textContent = 'Disconnected';
   });
 
-  socket.on('sos-report', payload => addSos(payload));
+  socket.on('sos-report', payload => {
+    addSos(payload);
+    statsReceived++;
+    updateStats();
+  });
 
   socket.on('sos-resolved', payload => {
-    // Multi-admin sync: another admin resolved this SOS
-    if (sosMap[payload.sosId]) removeSos(payload.sosId);
+    if (sosMap[payload.sosId]) {
+      removeSos(payload.sosId);
+      statsResolved++;
+      updateStats();
+    }
   });
 
   // ── SOS management ─────────────────────────────────────────────────────────
@@ -293,7 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
     `);
 
     marker.on('click', () => onSosClick(payload.id));
-
     sosMap[payload.id] = { payload, marker, triLines: [] };
     addSosToList(payload);
     updateBadge();
@@ -337,6 +363,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) el.textContent = Object.keys(sosMap).length;
   }
 
+  function updateStats() {
+    const r = document.getElementById('stat-received');
+    const s = document.getElementById('stat-resolved');
+    if (r) r.textContent = statsReceived;
+    if (s) s.textContent = statsResolved;
+  }
+
   // ── UI helpers ─────────────────────────────────────────────────────────────
   function setInstruction(msg) {
     const el = document.getElementById('instruction');
@@ -346,10 +379,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function setStatus(msg) {
     const el = document.getElementById('dispatch-status');
     if (!el) return;
-    el.textContent    = msg;
-    el.style.display  = msg ? 'block' : 'none';
+    el.textContent   = msg;
+    el.style.display = msg ? 'block' : 'none';
   }
 
-  // Initial render
   renderTagPanel();
 });

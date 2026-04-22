@@ -31,6 +31,21 @@ html, body {
   color: #95a5a6;
 }
 
+.topbar-stats {
+  display: flex;
+  gap: 10px;
+}
+
+.stat-pill {
+  font-size: 0.72rem;
+  color: #95a5a6;
+  background: rgba(255,255,255,0.06);
+  padding: 3px 9px;
+  border-radius: 99px;
+}
+.stat-pill b { color: #ecf0f1; }
+.stat-pill--resolved b { color: #2ecc71; }
+
 .conn-dot {
   width: 9px;
   height: 9px;
@@ -207,6 +222,34 @@ html, body {
   margin-top: 2px;
 }
 .dispatch-btn:hover { background: #c0392b; }
+
+.cancel-btn {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.13s;
+}
+.cancel-btn:hover { color: #e74c3c; border-color: #e74c3c; background: #fff5f5; }
+
+/* Permanent depot tooltip label */
+.depot-label {
+  background: rgba(44,62,80,0.82) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  color: #ecf0f1 !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  padding: 3px 7px !important;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important;
+}
+.depot-label::before { display: none !important; }
 
 .dispatch-status {
   font-size: 0.77rem;
