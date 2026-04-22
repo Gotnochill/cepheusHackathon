@@ -122,6 +122,25 @@ body {
   background-color: #b02a37;
 }
 
+/* ── QR code block ───────────────────────────────────────────────────────── */
+.qr-block {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #f0e8e8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  cursor: default;
+}
+
+.qr-label {
+  font-size: 0.68rem;
+  color: #bbb;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
 @media (max-width: 480px) {
   .title { font-size: 1.6rem; }
   .mode-grid { flex-direction: column; align-items: center; }

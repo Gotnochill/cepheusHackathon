@@ -1,9 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
 import "./LandingPage.css";
+
+const SOS_PATH = "/realistic/user";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const sosUrl   = `${window.location.origin}${SOS_PATH}`;
 
   return (
     <div className="landing-container">
@@ -31,6 +35,17 @@ const LandingPage = () => {
             response team, and notifies emergency services.
           </p>
           <span className="mode-cta mode-cta--user">Start</span>
+
+          <div className="qr-block" onClick={e => e.stopPropagation()}>
+            <QRCodeSVG
+              value={sosUrl}
+              size={112}
+              bgColor="#ffffff"
+              fgColor="#2c3e50"
+              level="M"
+            />
+            <span className="qr-label">Scan to submit SOS</span>
+          </div>
         </div>
       </div>
     </div>
