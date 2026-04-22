@@ -109,28 +109,11 @@ io.on('connection', (socket) => {
 
 (function crisisLoop() {
   const delay = Math.round(Math.random() * (MAX_DELAY - MIN_DELAY)) + MIN_DELAY;
-  setTimeout(async () => {
+  setTimeout(() => {
     const report = generateFakeCrisis();
     io.emit('new-crisis', report);
     console.log('Emitted new-crisis:', report.victimName, '—', report.severity);
-
-    try {
-      await new Crisis({
-        name: report.victimName,
-        type: 'Crisis',
-        location: {
-          type: 'Point',
-          coordinates: [report.location.longitude, report.location.latitude],
-        },
-        severity: mapSeverityToNumber(report.severity),
-        startDate: new Date(),
-        description: `Needs: ${report.needs.join(', ')}`,
-        affectedAreas: [],
-      }).save();
-    } catch (err) {
-      console.error('Error saving crisis:', err.message);
-    }
-
+    // Faker simulation data is not persisted — only real SOS submissions are saved
     crisisLoop();
   }, delay);
 })();
